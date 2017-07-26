@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.github.barteksc.pdfviewer.listener.OnLongPressListener;
 import com.github.barteksc.pdfviewer.scroll.ScrollHandle;
 
 import static com.github.barteksc.pdfviewer.util.Constants.Pinch.MAXIMUM_ZOOM;
@@ -38,12 +39,14 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
 
+
     private boolean isSwipeEnabled;
 
     private boolean swipeVertical;
 
     private boolean scrolling = false;
     private boolean scaling = false;
+    private OnLongPressListener onLongPressLister;
 
     public DragPinchManager(PDFView pdfView, AnimationManager animationManager) {
         this.pdfView = pdfView;
@@ -53,6 +56,10 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         gestureDetector = new GestureDetector(pdfView.getContext(), this);
         scaleGestureDetector = new ScaleGestureDetector(pdfView.getContext(), this);
         pdfView.setOnTouchListener(this);
+    }
+
+    public void enableLongPress(boolean enableLongPress) {
+        gestureDetector.setIsLongpressEnabled(enableLongPress);
     }
 
     public void enableDoubletap(boolean enableDoubletap) {
@@ -145,7 +152,9 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
 
     @Override
     public void onLongPress(MotionEvent e) {
-
+        if (onLongPressLister != null) {
+            onLongPressLister.onLongPressDetected();
+        }
     }
 
     @Override
@@ -212,5 +221,9 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         if (pdfView.getScrollHandle() != null && pdfView.getScrollHandle().shown()) {
             pdfView.getScrollHandle().hideDelayed();
         }
+    }
+
+    public void setOnLongPressLister(OnLongPressListener onLongPressLister) {
+        this.onLongPressLister = onLongPressLister;
     }
 }

@@ -36,6 +36,7 @@ import android.widget.RelativeLayout;
 import com.github.barteksc.pdfviewer.listener.OnDrawListener;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnLongPressListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
 import com.github.barteksc.pdfviewer.listener.OnRenderListener;
@@ -1354,6 +1355,8 @@ public class PDFView extends RelativeLayout {
         private ScrollHandle scrollHandle = null;
 
         private boolean antialiasing = true;
+        private boolean enableLongPress = false;
+        private OnLongPressListener onLongPressListener;
 
         private int spacing = 0;
 
@@ -1446,6 +1449,16 @@ public class PDFView extends RelativeLayout {
             return this;
         }
 
+        public Configurator enableLongPress(boolean enableLongPress) {
+            this.enableLongPress = enableLongPress;
+            return this;
+        }
+
+        public Configurator onLongPress(OnLongPressListener onLongPressListener) {
+            this.onLongPressListener = onLongPressListener;
+            return this;
+        }
+
         public void load() {
             PDFView.this.recycle();
             PDFView.this.setOnDrawListener(onDrawListener);
@@ -1462,6 +1475,8 @@ public class PDFView extends RelativeLayout {
             PDFView.this.enableAntialiasing(antialiasing);
             PDFView.this.setSpacing(spacing);
             PDFView.this.dragPinchManager.setSwipeVertical(swipeVertical);
+            PDFView.this.dragPinchManager.enableLongPress(enableLongPress);
+            PDFView.this.dragPinchManager.setOnLongPressLister(onLongPressListener);
             if (pageNumbers != null) {
                 PDFView.this.load(documentSource, password, onLoadCompleteListener, onErrorListener, pageNumbers);
             } else {
